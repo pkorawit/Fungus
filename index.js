@@ -31,15 +31,34 @@ $('input[type="file"]').change(function (e) {
 });
 
 $("#start").click(function () {
-    // Create a root reference
+    $("#progress").show();
     var storageRef = firebase.storage().ref();
 
-    // Create a reference to 'mountains.jpg'
+    // Upload image to Firebase
     var newImageRef = storageRef.child('upload/test.jpg');
 
     var file = $('#photo').get(0).files[0];
-    newImageRef.put(file).then(function(snapshot) {
+    newImageRef.put(file).then(function (snapshot) {
+        
         console.log('Uploaded a blob or file!');
+        // Call prediction API
+        const url = "http://172.26.252.67:5000/predict";
+        $.getJSON(url, function (result) {
+            $("#progress").hide();
+            console.log(result);
+            const found = `<button id="found" type="button" class="btn btn-danger mt-3">Found</button>`;
+            const notfound = `<button id="notfound" type="button" class="btn btn-success mt-3">Not Found</button>`;
+            if(result.result){
+                $("#result").html(found)
+            }
+            else{
+                $("#result").html(notfound)
+            }
+            
+        });
     });
+
+
+
 
 });
